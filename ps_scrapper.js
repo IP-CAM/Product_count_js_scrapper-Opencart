@@ -27,6 +27,9 @@ setTimeout(function () {
 		    	let str = $(html).find('.specs-table .spec-line:nth-child(7) .primary-text.small-text.text').text()
 		    	if($(html).find('[itemprop="offers"] .free-text').text() == 'Free' || str.indexOf('Number') != 0) {
 		    		nchild = 6
+			    	if(str.indexOf('Number') == 0) {
+			    		nchild = 7
+			    	}
 		    	}
 		    	
 		    	let tdata = {

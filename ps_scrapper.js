@@ -22,17 +22,16 @@ setTimeout(function () {
 	  for(y=0; y< atags.length; y++) {
 		  for(i=0; i< atags[y].length; i++) {
 		    let url = atags[y][i].getAttribute('href')
-		  	console.log(url)
 		    await $.get(url, function(html, status){
 		    	let nchild = 7
 		    	let str = $(html).find('.specs-table .spec-line:nth-child(7) .primary-text.small-text.text').text()
 		    	if($(html).find('[itemprop="offers"] .free-text').text() == 'Free' || str.indexOf('Number') != 0) {
 		    		nchild = 6
 		    	}
-		    	console.log(str, nchild)
 		    	
 		    	let tdata = {
 		          'sale_count': getcount($(html).find('.specs-table .spec-line:nth-child(' + nchild + ') .spec-data').text().trim()),
+		          'url': url,
 		          'price': $(html).find('[itemprop="price"]').attr('content'),
 		          'name': trimspace($(html).find('#product_title').text().trim()),
 		        }

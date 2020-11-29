@@ -8,9 +8,28 @@ setTimeout(function () {
 	let atags = []
 	let total_count = 0  
 	let datas = []
+	let errors = []
 	// const pagesToGet = [1,2,3,4,5,6,7]
 	const pagesToGet = [1,2,3,4,5]
 
+	$.ajaxSetup({
+        error: AjaxError,
+        global: false,
+    });
+
+   	function AjaxError(x, e) {
+	  if (x.status == 0) {
+	    console.log(' Check Your Network.');
+	  } else if (x.status == 404) {
+	    console.log('Requested URL not found.');
+	  } else if (x.status == 500) {
+	    console.log('Internel Server Error.');
+	  }  else {
+	     console.log('Unknow Error.\n' + x.responseText);
+	  }
+	  return true
+	}
+ 
 	async function getURLS(i) {
 	  await $.get('https://addons.prestashop.com/en/2-modules-prestashop?nb_item=96&page=' + i, function(html, status){
 	     atags.push($(html).find('#products-list > div a'))
@@ -22,27 +41,33 @@ setTimeout(function () {
 	  for(y=0; y< atags.length; y++) {
 		  for(i=0; i< atags[y].length; i++) {
 		    let url = atags[y][i].getAttribute('href')
-		    await $.get(url, function(html, status){
-		    	let nchild = 7
-		    	let str = $(html).find('.specs-table .spec-line:nth-child(7) .primary-text.small-text.text').text()
-		    	if($(html).find('[itemprop="offers"] .free-text').text() == 'Free' || str.indexOf('Number') != 0) {
-		    		nchild = 6
-			    	if(str.indexOf('Number') == 0) {
-			    		nchild = 7
+		    // url = 'https://addons.prestashop.com/en/analytics-statistics/16397-google-ads-google-adwords-conversion-tracking-pro.html'
+		    try {
+		    	await $.get(url, function(html, status){		    	
+			    	let nchild = 7
+			    	let str = $(html).find('.specs-table .spec-line:nth-child(7) .primary-text.small-text.text').text()
+			    	if($(html).find('[itemprop="offers"] .free-text').text() == 'Free' || str.indexOf('Number') != 0) {
+			    		nchild = 6
+				    	if(str.indexOf('Number') == 0) {
+				    		nchild = 7
+				    	}
 			    	}
-		    	}
-		    	
-		    	let tdata = {
-		          'sale_count': getcount($(html).find('.specs-table .spec-line:nth-child(' + nchild + ') .spec-data').text().trim()),
-		          'url': url,
-		          'price': $(html).find('[itemprop="price"]').attr('content'),
-		          'name': trimspace($(html).find('#product_title').text().trim()),
-		        }
+			    	
+			    	let tdata = {
+			          'sale_count': getcount($(html).find('.specs-table .spec-line:nth-child(' + nchild + ') .spec-data').text().trim()),
+			          'url': url,
+			          'price': $(html).find('[itemprop="price"]').attr('content'),
+			          'name': trimspace($(html).find('#product_title').text().trim()),
+			        }
 
-		  		console.log(tdata)
-		       datas.push(tdata)
-		       total_count += parseInt(tdata.sale_count)
-		    })
+			  		console.log(tdata)
+			       datas.push(tdata)
+			       total_count += parseInt(tdata.sale_count)
+			    })
+		    } catch (err) {
+		    	console.log(err)
+		    	errors.push(err)
+		    } 		    
 		  }
 	  }
 	}

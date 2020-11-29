@@ -9,7 +9,7 @@ setTimeout(function () {
 	let total_count = 0  
 	let datas = []
 	// const pagesToGet = [1,2,3,4,5,6,7]
-	const pagesToGet = [5]
+	const pagesToGet = [1,2,3,4,5]
 
 	async function getURLS(i) {
 	  await $.get('https://addons.prestashop.com/en/2-modules-prestashop?nb_item=96&page=' + i, function(html, status){
@@ -68,7 +68,7 @@ setTimeout(function () {
 	}
 
 	function getcount(str) {
-		str = str.replace(/en+|fr+|es+|it+|de+/g, '', str)
+		str = str.replace(/en+|fr+|es+|it+|de+|ru+|cs+|nl+|pl+|tr+|pt+|zh+/g, '', str)
 		str = str.replace(/\s\s+/g, '', str)
 		str = str.replace(/  +/g, '', str)
 		return str.replace(/,/g, '', str)

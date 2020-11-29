@@ -69,8 +69,8 @@ setTimeout(function () {
 
 	function getcount(str) {
 		str = str.replace(/en+|fr+|es+|it+|de+/g, '', str)
-		str = str.replace(/\s\s+/g, ' ', str)
-		str = str.replace(/  +/g, ' ', str)
+		str = str.replace(/\s\s+/g, '', str)
+		str = str.replace(/  +/g, '', str)
 		return str.replace(/,/g, '', str)
 	}
 

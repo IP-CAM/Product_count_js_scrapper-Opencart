@@ -1,105 +1,67 @@
 var s = document.createElement("script");
 s.type = "text/javascript";
-s.src = "https://code.jquery.com/jquery-3.5.1.min.js";
+s.src = "https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js";
+$("head").append(s);
+
+var s = document.createElement("link");
+s.type = "text/css";
+s.rel = "stylesheet";
+s.href = "https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css";
 $("head").append(s);
 
 setTimeout(function () {
+  let atags = []
+  let total_count = 0  
+  let datas = []
+  var pagesToGet = []
 
-	let atags = []
-	let total_count = 0  
-	let datas = []
-	let errors = []
-	// const pagesToGet = [1,2,3,4,5,6,7]
-	const pagesToGet = [1,2,3,4,5]
+  for(let i = 0; i < 1; i++) {
+    pagesToGet.push(i)
+  }
 
-	$.ajaxSetup({
-        error: AjaxError,
-        global: false,
-    });
+  async function getURLS(i) {
+    await $.get('https://www.opencart.com/index.php?route=marketplace/extension&filter_member=codeeshop&page=' + i, function(html, status){
+       atags.push($(html).find('.extension-preview a'))
+    })
+  }
 
-   	function AjaxError(x, e) {
-	  if (x.status == 0) {
-	    console.log(' Check Your Network.');
-	  } else if (x.status == 404) {
-	    console.log('Requested URL not found.');
-	  } else if (x.status == 500) {
-	    console.log('Internel Server Error.');
-	  }  else {
-	     console.log('Unknow Error.\n' + x.responseText);
-	  }
-	  return true
-	}
- 
-	async function getURLS(i) {
-	  await $.get('https://addons.prestashop.com/en/2-modules-prestashop?nb_item=96&page=' + i, function(html, status){
-	     atags.push($(html).find('#products-list > div a'))
-	  })
-	}
+  async function myfunc() {
+    let data = []
+    for(y=0; y< atags.length; y++) {
+      for(i=0; i< atags[y].length; i++) {
+        let url = atags[y][i].getAttribute('href')
+        // console.log(url)
+        await $.get(url, function(html, status){
+           let tdata = {
+              'sale_count': $(html).find('#sales strong').text(),
+              'name': $(html).find('.container h3').text(),
+           }
 
-	async function myfunc() {
-	  let data = []
-	  for(y=0; y< atags.length; y++) {
-		  for(i=0; i< atags[y].length; i++) {
-		    let url = atags[y][i].getAttribute('href')
-		    // url = 'https://addons.prestashop.com/en/analytics-statistics/16397-google-ads-google-adwords-conversion-tracking-pro.html'
-		    try {
-		    	await $.get(url, function(html, status){		    	
-			    	let nchild = 7
-			    	let str = $(html).find('.specs-table .spec-line:nth-child(7) .primary-text.small-text.text').text()
-			    	if($(html).find('[itemprop="offers"] .free-text').text() == 'Free' || str.indexOf('Number') != 0) {
-			    		nchild = 6
-				    	if(str.indexOf('Number') == 0) {
-				    		nchild = 7
-				    	}
-			    	}
-			    	
-			    	let tdata = {
-			          'sale_count': getcount($(html).find('.specs-table .spec-line:nth-child(' + nchild + ') .spec-data').text().trim()),
-			          'url': url,
-			          'price': $(html).find('[itemprop="price"]').attr('content'),
-			          'name': trimspace($(html).find('#product_title').text().trim()),
-			        }
+           datas.push(tdata)
+           toastr["success"](tdata.sale_count + ' : '+ tdata.name)
+           total_count += parseInt(tdata.sale_count)
+        })
+      }
+    }
+  }
 
-			  		console.log(tdata)
-			       datas.push(tdata)
-			       total_count += parseInt(tdata.sale_count)
-			    })
-		    } catch (err) {
-		    	console.log(err)
-		    	errors.push(err)
-		    } 		    
-		  }
-	  }
-	}
+  const mapLoop = async _ => {
+    console.log('Start')
 
-	const mapLoop = async _ => {
-	  console.log('Start')
-
-	  const promises = pagesToGet.map(async page => {
-	    const result = await getURLS(page)
-	    return result
-	  })
+    const promises = pagesToGet.map(async page => {
+      const numFruit = await getURLS(page)
+      return numFruit
+    })
 
 
-	  const allresults = await Promise.all(promises)
-	  await myfunc()
+    const numFruits = await Promise.all(promises)
+    await myfunc()
 
-	  console.table(datas)
-	  console.log('total_count : ', total_count)
-	  console.log('End')
-	}
+    console.table(datas)
+    console.log('total_count : ', total_count)
+    toastr["success"]('total_count : ' + total_count)
+    console.log('End')
+  }
 
-	function trimspace(str) {
-		str = str.replace(/\s\s+/g, ' ', str)
-		return str.replace(/  +/g, ' ', str)
-	}
-
-	function getcount(str) {
-		str = str.replace(/en+|fr+|es+|it+|de+|ru+|cs+|nl+|pl+|tr+|pt+|zh+/g, '', str)
-		str = str.replace(/\s\s+/g, '', str)
-		str = str.replace(/  +/g, '', str)
-		return str.replace(/,/g, '', str)
-	}
-
-	mapLoop()
+  mapLoop()  
 }, 2000)

@@ -13,10 +13,10 @@ setTimeout(function () {
   let atags = []
   let total_count = 0  
   let datas = []
-  var pages = 1
+  var pages = 100
   var pagesToGet = []
 
-  for(let i = 0; i < pages; i++) {
+  for(let i = 1; i < pages; i++) {
     pagesToGet.push(i)
   }
 
@@ -33,11 +33,12 @@ setTimeout(function () {
         let url = atags[y][i].getAttribute('href')
         // console.log(url)
         await $.get(url, function(html, status){
+        console.log(status, 'status')
            let tdata = {
               'sale_count': $(html).find('#sales strong').text(),
               'name': $(html).find('.container h3').text(),
-	      'comment': parseInt($(html).find('#comment strong').text()),
-	      'price': $(html).find('#price .text-right').text(),   
+      	      'comment': parseInt($(html).find('#comment strong').text()),
+      	      'price': $(html).find('#price .text-right').text(),   
            }
 
            datas.push(tdata)
@@ -56,15 +57,27 @@ setTimeout(function () {
       return numFruit
     })
 
-
     const numFruits = await Promise.all(promises)
     await myfunc()
 
+    datas.sort(GetSortOrder("sale_count"));
     console.table(datas)
     console.log('total_count : ', total_count)
     toastr["success"]('total_count : ' + total_count)
     console.log('End')
   }
+
+  function GetSortOrder(prop) {    
+    return function(a, b) {    
+        if (a[prop] < b[prop]) {    
+            return 1;    
+        } else if (a[prop] > b[prop]) {    
+            return -1;    
+        }    
+        return 0;    
+    }    
+  }    
+
 
   mapLoop()  
 }, 2000)

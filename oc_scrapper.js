@@ -33,7 +33,7 @@ setTimeout(function () {
         let url = atags[y][i].getAttribute('href')
         // console.log(url)
         await $.get(url, function(html, status){
-        console.log(status, 'status')
+          //console.log(status, 'status')
            let tdata = {
               'sale_count': $(html).find('#sales strong').text(),
               'name': $(html).find('.container h3').text(),

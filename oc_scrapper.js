@@ -63,7 +63,7 @@ setTimeout(function () {
 
     datas.sort(GetSortOrder("sale_count"));
     console.table(datas)
-    copy(datas)
+    //copy(datas)
     console.log('total_count : ', total_count)
     toastr["success"]('total_count : ' + total_count)
     console.log('End')

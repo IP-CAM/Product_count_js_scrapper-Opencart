@@ -1,0 +1,10 @@
+let rows = $('#download-row0 [type="checkbox"]')
+for(let i=0; i<rows.length; i++) {
+    
+    let version = parseFloat($(rows[i]).parent().text())
+    if(version > 1.5) {
+        $(rows[i]).attr('checked', 'checked')        
+    } else {
+        $(rows[i]).removeAttr('checked')
+    }
+}

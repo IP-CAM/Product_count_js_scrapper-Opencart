@@ -41,7 +41,7 @@ setTimeout(function () {
               'name': $(html).find('.container h3:first').text(),
       	      'comment': parseInt($(html).find('#comment strong').text()),
       	      'price': $(html).find('#price .text-right').text(),   
-              'url': url,
+              // 'url': url,
            }
 
            datas.push(tdata)

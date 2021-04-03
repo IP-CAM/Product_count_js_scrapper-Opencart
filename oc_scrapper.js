@@ -11,7 +11,8 @@ $("head").append(s);
 
 setTimeout(function () {
   let atags = []
-  let total_count = 0  
+  let total_count = 0
+  let total_comments_count = 0
   let datas = []
   var pages = 20
   var pagesToGet = []
@@ -46,6 +47,7 @@ setTimeout(function () {
            datas.push(tdata)
            toastr["success"](tdata.sale_count + ' : '+ tdata.name)
            total_count += parseInt(tdata.sale_count)
+           total_comments_count += parseInt(tdata.comment)
         })
       }
     }
@@ -64,7 +66,7 @@ setTimeout(function () {
     datas.sort(GetSortOrder("sale_count"));
     console.table(datas)
     //copy(datas)
-    console.log('total_count : ', total_count)
+    console.log({total_count, total_count, total_comments_count: total_comments_count})
     toastr["success"]('total_count : ' + total_count)
     console.log('End')
   }

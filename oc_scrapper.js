@@ -23,8 +23,21 @@ setTimeout(function () {
 
   async function getURLS(i) {
     await $.get('https://www.opencart.com/index.php?route=marketplace/extension&filter_member=codeeshop&page=' + i, function(html, status){
-        $(html).find('img').remove()
-       atags.push($(html).find('.extension-preview a'))
+        $(html).find('img').remove()        
+        //atags.push($(html).find('.extension-preview a'))
+        // Removing Popular Extensions
+        let allChilds = $(html).find('#extension-list')[0].childNodes
+        let newTags = []
+        for (var i = allChilds.length - 1; i >= 0; i--) {
+          if(allChilds[i].localName == 'hr') break;
+          if($(allChilds[i]).find('.extension-preview a').length) {
+            let childs = $(allChilds[i]).find('.extension-preview a')
+            for (var k = childs.length - 1; k >= 0; k--) {
+              newTags.push(childs[k])
+            }
+          }
+        }
+        atags.push(newTags)
     })
   }
 
@@ -34,8 +47,7 @@ setTimeout(function () {
       for(i=0; i< atags[y].length; i++) {
         let url = atags[y][i].getAttribute('href')
         // console.log(url)
-        await $.get(url, function(html, status){
-          //console.log(status, 'status')
+        await $.get(url, function(html, status){          
            let tdata = {
               'sale_count': parseInt($(html).find('#sales strong').text()),
               'name': $(html).find('.container h3:first').text(),
